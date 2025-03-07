@@ -1,10 +1,9 @@
 services:
-  shoppningmall_db:
+  ecommerce_db:
     build:
       context: .
       dockerfile: Dockerfile
-    image: postgres:latest
-    container_name: shoppningmall_db
+    container_name: ecommerce_db
     restart: always
     shm_size: 128mb
     networks:
@@ -12,7 +11,7 @@ services:
     ports:
       - "7432:5432"
     volumes:
-      - shoppningmall_db_volume:/var/lib/postgresql/data
+      - ecommerce_db_volume:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       POSTGRES_PASSWORD: postgres # must change your own password.
@@ -23,5 +22,5 @@ networks:
     external: true
 
 volumes:
-  shoppningmall_db_volume:
-    name: shoppningmall_db_volume
+  ecommerce_db_volume:
+    name: ecommerce_db_volume
