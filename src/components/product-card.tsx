@@ -115,18 +115,18 @@ export default function ProductCard({
           {/* Quick actions */}
           <div
             className={cn(
-              "absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-sm p-2 flex justify-between transition-all duration-300",
+              "absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-sm p-2 flex gap-2 transition-all duration-300",
               isHovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-full",
             )}
           >
-            <Button size="sm" variant="secondary" className="w-full mr-1" onClick={handleAddToCart}>
+            <Button size="sm" variant="secondary" className="flex-1 cursor-pointer" onClick={handleAddToCart}>
               <ShoppingCart className="h-4 w-4 mr-1" />
               담기
             </Button>
             <Button
               size="sm"
               variant="outline"
-              className={`bg-transparent border-white/50 hover:bg-white/20 hover:text-white ${
+              className={`bg-transparent border-white/50 hover:bg-white/20 hover:text-white cursor-pointer ${
                 isWishlisted ? "text-red-500" : "text-white"
               }`}
               onClick={handleToggleWishlist}
