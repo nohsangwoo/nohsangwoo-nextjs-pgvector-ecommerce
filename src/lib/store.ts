@@ -1,7 +1,9 @@
-import { create } from "zustand"
-import { persist } from "zustand/middleware"
-import type { CartItem } from "./cart"
-import type { WishlistItem } from "./wishlist"
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+import type { CartItem } from './cart'
+import type { WishlistItem } from './wishlist'
+import { LoginResponse } from '@/app/api/login/route'
+import { apiRoutes } from './apiRoutes'
 
 interface ShopState {
   cart: CartItem[]
@@ -21,69 +23,65 @@ export const useShopStore = create(
     (set, get) => ({
       cart: [],
       wishlist: [],
-      addToCart: (item) =>
-        set((state) => {
-          const existingItem = state.cart.find((i) => i.id === item.id)
+      addToCart: item =>
+        set(state => {
+          const existingItem = state.cart.find(i => i.id === item.id)
           if (existingItem) {
             return {
-              cart: state.cart.map((i) => (i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i)),
+              cart: state.cart.map(i =>
+                i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i,
+              ),
             }
           }
           return { cart: [...state.cart, item] }
         }),
-      removeFromCart: (id) =>
-        set((state) => ({
-          cart: state.cart.filter((item) => item.id !== id),
+      removeFromCart: id =>
+        set(state => ({
+          cart: state.cart.filter(item => item.id !== id),
         })),
       updateCartItemQuantity: (id, quantity) =>
-        set((state) => ({
-          cart: state.cart.map((item) => (item.id === id ? { ...item, quantity } : item)),
+        set(state => ({
+          cart: state.cart.map(item =>
+            item.id === id ? { ...item, quantity } : item,
+          ),
         })),
       clearCart: () => set({ cart: [] }),
-      addToWishlist: (item) =>
-        set((state) => {
-          if (!state.wishlist.some((i) => i.id === item.id)) {
+      addToWishlist: item =>
+        set(state => {
+          if (!state.wishlist.some(i => i.id === item.id)) {
             return { wishlist: [...state.wishlist, item] }
           }
           return state
         }),
-      removeFromWishlist: (id) =>
-        set((state) => ({
-          wishlist: state.wishlist.filter((item) => item.id !== id),
+      removeFromWishlist: id =>
+        set(state => ({
+          wishlist: state.wishlist.filter(item => item.id !== id),
         })),
       clearWishlist: () => set({ wishlist: [] }),
-      isInWishlist: (id) => get().wishlist.some((item) => item.id === id),
+      isInWishlist: id => get().wishlist.some(item => item.id === id),
     }),
     {
-      name: "shop-storage",
+      name: 'shop-storage',
     },
   ),
 )
 
 interface AuthState {
-  user: { id: string; name: string; email: string } | null
+  user: { id: number; name?: string; email: string } | null
   isLoading: boolean
   login: (email: string, password: string) => Promise<boolean>
   logout: () => void
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>(set => ({
   user: null,
   isLoading: false,
   login: async (email, password) => {
     set({ isLoading: true })
     try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      })
+      const data = await fetchLogin(email, password)
 
-      const data = await response.json()
-
-      if (data.success) {
+      if (data.ok) {
         set({ user: data.user, isLoading: false })
         return true
       } else {
@@ -91,7 +89,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         return false
       }
     } catch (error) {
-      console.error("Login failed:", error)
+      console.error('Login failed:', error)
       set({ user: null, isLoading: false })
       return false
     }
@@ -99,3 +97,14 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout: () => set({ user: null }),
 }))
 
+export async function fetchLogin(email: string, password: string) {
+  const response = await fetch(apiRoutes.api.login, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email, password }),
+  })
+  const data = (await response.json()) as LoginResponse
+  return data
+}
