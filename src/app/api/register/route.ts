@@ -16,54 +16,63 @@ export type RegisterResponse = {
 }
 
 export async function POST(req: NextRequest) {
-  const args = await req.json()
+  try {
+    const args = await req.json()
 
-  const validatedFields = registerSchema.safeParse(args)
+    const validatedFields = registerSchema.safeParse(args)
 
-  if (!validatedFields.success) {
-    return NextResponse.json(
-      { ok: false, error: 'Invalid fields' },
-      { status: 400 },
+    if (!validatedFields.success) {
+      return NextResponse.json<RegisterResponse>(
+        { ok: false, error: '유효하지 않은 필드입니다.' },
+        { status: 400 },
+      )
+    }
+
+    const { name, email, password } = validatedFields.data
+
+    // 이메일 중복 체크
+    const user = await prismaClient.user.findUnique({
+      where: {
+        email: email,
+      },
+    })
+
+    // 유저가 존재하는 경우 400 에러 반환 - (회원가입 진행 불가)
+    if (user) {
+      return NextResponse.json<RegisterResponse>(
+        { ok: false, error: '이미 존재하는 이메일입니다.' },
+        { status: 400 },
+      )
+    }
+
+    //   비밀번호 해시화
+    const hashedPassword = await argon2.hash(password)
+
+    //   유저가 존재하지 않는 경우 회원가입 진행
+    const newUser = await prismaClient.user.create({
+      data: {
+        name: name,
+        email: email,
+        password: hashedPassword,
+      },
+    })
+
+    if (!newUser) {
+      return NextResponse.json<RegisterResponse>(
+        { ok: false, error: '회원가입 실패' },
+        { status: 400 },
+      )
+    }
+
+    return NextResponse.json<RegisterResponse>({
+      ok: true,
+      message: '회원가입 완료',
+    })
+  } catch (error) {
+    console.error('Error in register route: ', error)
+    return NextResponse.json<RegisterResponse>(
+      { ok: false, error: 'Internal server error' },
+      { status: 500 },
     )
   }
-
-  const { name, email, password } = validatedFields.data
-
-  // 이메일 중복 체크
-  const user = await prismaClient.user.findUnique({
-    where: {
-      email: email,
-    },
-  })
-
-  // 유저가 존재하는 경우 400 에러 반환 - (회원가입 진행 불가)
-  if (user) {
-    return NextResponse.json(
-      { ok: false, error: 'User already exists' },
-      { status: 400 },
-    )
-  }
-
-  //   비밀번호 해시화
-  const hashedPassword = await argon2.hash(password)
-
-  //   유저가 존재하지 않는 경우 회원가입 진행
-  const newUser = await prismaClient.user.create({
-    data: {
-      name: name,
-      email: email,
-      password: hashedPassword,
-    },
-  })
-
-  console.log('newUser in register route: ', newUser)
-
-  if (!newUser) {
-    return NextResponse.json(
-      { ok: false, message: 'User creation failed' },
-      { status: 400 },
-    )
-  }
-
-  return NextResponse.json({ ok: true, error: 'User created successfully' })
 }
