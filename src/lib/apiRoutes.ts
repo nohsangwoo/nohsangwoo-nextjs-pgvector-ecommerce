@@ -7,7 +7,9 @@ interface ApiRoutes {
       products: string;
       users: string;
     };
+    embeddings: string;
     login: string;
+    presignedUrl: string;
     products: string;
     register: string;
   };
@@ -21,7 +23,9 @@ export const apiRoutes: ApiRoutes = {
       "products": "/api/admin/products",
       "users": "/api/admin/users"
     },
+    "embeddings": "/api/embeddings",
     "login": "/api/login",
+    "presignedUrl": "/api/presignedUrl",
     "products": "/api/products",
     "register": "/api/register"
   }
