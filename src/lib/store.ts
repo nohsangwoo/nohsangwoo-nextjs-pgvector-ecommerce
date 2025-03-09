@@ -4,6 +4,7 @@ import type { CartItem } from './cart'
 import type { WishlistItem } from './wishlist'
 import { LoginResponse } from '@/app/api/login/route'
 import { apiRoutes } from './apiRoutes'
+import { logout } from './ironSessionControl'
 
 interface ShopState {
   cart: CartItem[]
@@ -73,29 +74,39 @@ interface AuthState {
   logout: () => void
 }
 
-export const useAuthStore = create<AuthState>(set => ({
-  user: null,
-  isLoading: false,
-  login: async (email, password) => {
-    set({ isLoading: true })
-    try {
-      const data = await fetchLogin(email, password)
+export const useAuthStore = create(
+  persist<AuthState>(
+    set => ({
+      user: null,
+      isLoading: false,
+      login: async (email, password) => {
+        set({ isLoading: true })
+        try {
+          const data = await fetchLogin(email, password)
 
-      if (data.ok) {
-        set({ user: data.user, isLoading: false })
-        return true
-      } else {
-        set({ user: null, isLoading: false })
-        return false
-      }
-    } catch (error) {
-      console.error('Login failed:', error)
-      set({ user: null, isLoading: false })
-      return false
-    }
-  },
-  logout: () => set({ user: null }),
-}))
+          if (data.ok) {
+            set({ user: data.user, isLoading: false })
+            return true
+          } else {
+            set({ user: null, isLoading: false })
+            return false
+          }
+        } catch (error) {
+          console.error('Login failed:', error)
+          set({ user: null, isLoading: false })
+          return false
+        }
+      },
+      logout: () => {
+        set({ user: null })
+        logout()
+      },
+    }),
+    {
+      name: 'auth-storage',
+    },
+  ),
+)
 
 export async function fetchLogin(email: string, password: string) {
   const response = await fetch(apiRoutes.api.login, {

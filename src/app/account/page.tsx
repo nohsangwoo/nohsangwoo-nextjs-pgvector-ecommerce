@@ -1,29 +1,28 @@
-"use client"
+'use client'
 
-import type React from "react"
+import type React from 'react'
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { ArrowLeft, LogOut } from "lucide-react"
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { ArrowLeft, LogOut } from 'lucide-react'
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useToast } from "@/components/ui/use-toast"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useAuthStore } from "@/lib/store"
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useAuthStore } from '@/lib/store'
+import { toast } from 'sonner'
 
 export default function AccountPage() {
   const router = useRouter()
-  const { toast } = useToast()
   const { user, logout } = useAuthStore()
-  const [name, setName] = useState(user?.name || "")
-  const [email, setEmail] = useState(user?.email || "")
+  const [name, setName] = useState(user?.name || '')
+  const [email, setEmail] = useState(user?.email || '')
 
   useEffect(() => {
     if (!user) {
-      router.push("/login")
+      router.push('/login')
     }
   }, [user, router])
 
@@ -31,19 +30,13 @@ export default function AccountPage() {
     e.preventDefault()
     // Here you would typically make an API call to update the user's profile
     // For now, we'll just show a toast message
-    toast({
-      title: "프로필 업데이트",
-      description: "프로필이 성공적으로 업데이트되었습니다.",
-    })
+    toast.success('프로필이 성공적으로 업데이트되었습니다.')
   }
 
   const handleLogout = () => {
     logout()
-    router.push("/")
-    toast({
-      title: "로그아웃",
-      description: "성공적으로 로그아웃되었습니다.",
-    })
+    router.push('/')
+    toast.success('성공적으로 로그아웃되었습니다.')
   }
 
   if (!user) {
@@ -73,11 +66,20 @@ export default function AccountPage() {
           <form onSubmit={handleUpdateProfile} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="name">이름</Label>
-              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
+              <Input
+                id="name"
+                value={name}
+                onChange={e => setName(e.target.value)}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">이메일</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+              />
             </div>
             <Button type="submit">프로필 업데이트</Button>
           </form>
@@ -96,13 +98,17 @@ export default function AccountPage() {
             <div>
               <Label htmlFor="notifications">알림 설정</Label>
               <div className="mt-2">
-                <p className="text-muted-foreground">알림 설정 옵션을 준비 중입니다.</p>
+                <p className="text-muted-foreground">
+                  알림 설정 옵션을 준비 중입니다.
+                </p>
               </div>
             </div>
             <div>
               <Label htmlFor="privacy">개인정보 설정</Label>
               <div className="mt-2">
-                <p className="text-muted-foreground">개인정보 설정 옵션을 준비 중입니다.</p>
+                <p className="text-muted-foreground">
+                  개인정보 설정 옵션을 준비 중입니다.
+                </p>
               </div>
             </div>
           </div>
@@ -118,4 +124,3 @@ export default function AccountPage() {
     </div>
   )
 }
-

@@ -1,3 +1,5 @@
+'use server'
+
 import { cookies } from 'next/headers'
 import { defaultSession, SessionData, sessionOptions } from './session'
 import { getIronSession } from 'iron-session'
@@ -13,4 +15,10 @@ export const getSession = async () => {
   }
 
   return session
+}
+
+export const logout = async () => {
+  const cookieStore = await cookies()
+  const session = await getIronSession<SessionData>(cookieStore, sessionOptions)
+  session.destroy()
 }
