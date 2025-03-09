@@ -17,8 +17,8 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const fileType = searchParams.get('fileType')
     const bucketPath = searchParams.get('bucketPath')
-      ? `vanvior/${searchParams.get('bucketPath')}/`
-      : 'vanvior/common/'
+      ? `ecommerce/${searchParams.get('bucketPath')}/`
+      : 'ecommerce/common/'
 
     if (!fileType) {
       return NextResponse.json(
