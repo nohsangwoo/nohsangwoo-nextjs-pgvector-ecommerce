@@ -21,7 +21,8 @@ const loginSchema = z.object({
 
 type LoginForm = z.infer<typeof loginSchema>
 
-export async function POST(request: Request, response: NextResponse) {
+export async function POST(request: Request) {
+  
   const args = await request.json()
 
   const validatedFields = loginSchema.safeParse(args)

@@ -8,9 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useToast } from "@/components/ui/use-toast"
 import { Separator } from "@/components/ui/separator"
-
+import { toast } from "sonner"
 interface OrderItem {
   id: string;
   name: string;
@@ -41,7 +40,6 @@ interface Order {
 export default function OrderDetailPage() {
   const params = useParams()
   const router = useRouter()
-  const { toast } = useToast()
   const id = params.id as string
 
   const [order, setOrder] = useState<Order | null>(null)
@@ -61,11 +59,7 @@ export default function OrderDetailPage() {
         setDeliveryStatus(data.deliveryStatus)
       } catch (error) {
         console.error("주문 데이터 로딩 오류:", error)
-        toast({
-          title: "오류",
-          description: "주문 정보를 불러올 수 없습니다.",
-          variant: "destructive",
-        })
+        toast.error("주문 정보를 불러올 수 없습니다.")
       } finally {
         setIsLoading(false)
       }
@@ -95,18 +89,14 @@ export default function OrderDetailPage() {
       const updatedOrder = await response.json()
       setOrder(updatedOrder)
 
-      toast({
-        title: "배송 상태가 업데이트되었습니다",
-        description: order ? `주문 ${order.id}의 배송 상태가 '${deliveryStatus}'(으)로 변경되었습니다.` : 
-          `배송 상태가 '${deliveryStatus}'(으)로 변경되었습니다.`,
-      })
+      toast.success(
+        order
+          ? `주문 ${order.id}의 배송 상태가 '${deliveryStatus}'(으)로 변경되었습니다.`
+          : `배송 상태가 '${deliveryStatus}'(으)로 변경되었습니다.`,
+      )
     } catch (error) {
-      console.error("배송 상태 업데이트 오류:", error)
-      toast({
-        title: "오류",
-        description: "배송 상태 업데이트에 실패했습니다.",
-        variant: "destructive",
-      })
+      console.error('배송 상태 업데이트 오류:', error)
+      toast.error('배송 상태 업데이트에 실패했습니다.')
     } finally {
       setIsUpdating(false)
     }

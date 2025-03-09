@@ -6,14 +6,12 @@ import Image from "next/image"
 import { ArrowLeft, Heart, ShoppingCart, Star } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { useToast } from "@/components/ui/use-toast"
 import { useShopStore } from "@/lib/store"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-
+import { toast } from "sonner"
 export default function ProductPage() {
   const params = useParams()
   const router = useRouter()
-  const { toast } = useToast()
   const { addToCart, addToWishlist, removeFromWishlist, isInWishlist } = useShopStore()
   const [isWishlisted, setIsWishlisted] = useState(false)
 
@@ -43,20 +41,14 @@ export default function ProductPage() {
       quantity: 1,
       category: product.category,
     })
-    toast({
-      title: "장바구니에 추가되었습니다",
-      description: `${product.name}이(가) 장바구니에 추가되었습니다.`,
-    })
+    toast.success(`${product.name}이(가) 장바구니에 추가되었습니다.`)
   }
 
   const handleToggleWishlist = () => {
     if (isWishlisted) {
       removeFromWishlist(product.id)
       setIsWishlisted(false)
-      toast({
-        title: "위시리스트에서 제거되었습니다",
-        description: `${product.name}이(가) 위시리스트에서 제거되었습니다.`,
-      })
+      toast.success(`${product.name}이(가) 위시리스트에서 제거되었습니다.`)
     } else {
       addToWishlist({
         id: product.id,
@@ -66,10 +58,7 @@ export default function ProductPage() {
         category: product.category,
       })
       setIsWishlisted(true)
-      toast({
-        title: "위시리스트에 추가되었습니다",
-        description: `${product.name}이(가) 위시리스트에 추가되었습니다.`,
-      })
+      toast.success(`${product.name}이(가) 위시리스트에 추가되었습니다.`)
     }
   }
 

@@ -10,9 +10,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useToast } from "@/components/ui/use-toast"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-
+import { toast } from "sonner"
 interface Product {
   id: string;
   name: string;
@@ -28,7 +27,6 @@ interface Product {
 export default function ProductDetailPage() {
   const params = useParams()
   const router = useRouter()
-  const { toast } = useToast()
   const id = params.id as string
   const isNew = id === "new"
 
@@ -46,12 +44,8 @@ export default function ProductDetailPage() {
         const data = await response.json()
         setProduct(data)
       } catch (error) {
-        console.error("상품 데이터 로딩 오류:", error)
-        toast({
-          title: "오류",
-          description: "상품 정보를 불러올 수 없습니다.",
-          variant: "destructive",
-        })
+        console.error('상품 데이터 로딩 오류:', error)
+        toast.error('상품 정보를 불러올 수 없습니다.')
       } finally {
         setIsLoading(false)
       }
@@ -81,10 +75,7 @@ export default function ProductDetailPage() {
 
       const savedProduct = await response.json()
 
-      toast({
-        title: "성공",
-        description: `상품이 성공적으로 ${isNew ? "등록" : "수정"}되었습니다.`,
-      })
+      toast.success(`상품이 성공적으로 ${isNew ? '등록' : '수정'}되었습니다.`)
 
       // 새 상품 등록 후 해당 상품의 상세 페이지로 이동
       if (isNew && savedProduct.id) {
@@ -94,11 +85,7 @@ export default function ProductDetailPage() {
       }
     } catch (error) {
       console.error("상품 정보 저장 오류:", error)
-      toast({
-        title: "오류",
-        description: `상품 ${isNew ? "등록" : "수정"}에 실패했습니다.`,
-        variant: "destructive",
-      })
+      toast.error(`상품 ${isNew ? '등록' : '수정'}에 실패했습니다.`)
     } finally {
       setIsSaving(false)
     }
@@ -120,19 +107,12 @@ export default function ProductDetailPage() {
         throw new Error("상품 삭제에 실패했습니다")
       }
 
-      toast({
-        title: "성공",
-        description: "상품이 성공적으로 삭제되었습니다.",
-      })
+      toast.success('상품이 성공적으로 삭제되었습니다.')
 
       router.push("/admin/products")
     } catch (error) {
-      console.error("상품 삭제 오류:", error)
-      toast({
-        title: "오류",
-        description: "상품 삭제에 실패했습니다.",
-        variant: "destructive",
-      })
+      console.error('상품 삭제 오류:', error)
+      toast.error('상품 삭제에 실패했습니다.')
     } finally {
       setIsSaving(false)
     }

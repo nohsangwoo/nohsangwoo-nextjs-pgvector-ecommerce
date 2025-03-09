@@ -1,50 +1,73 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { Search, Filter, ChevronDown, MoreHorizontal, Calendar } from "lucide-react"
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import {
+  Search,
+  Filter,
+  ChevronDown,
+  MoreHorizontal,
+  Calendar,
+} from 'lucide-react'
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useToast } from "@/components/ui/use-toast"
-
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { toast } from 'sonner'
 interface Order {
-  id: string;
-  customer: string;
-  date: string;
-  items: number;
-  total: number;
-  paymentStatus: string;
-  deliveryStatus: string;
+  id: string
+  customer: string
+  date: string
+  items: number
+  total: number
+  paymentStatus: string
+  deliveryStatus: string
 }
 
 export default function OrdersPage() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
+  const [searchTerm, setSearchTerm] = useState('')
+  const [statusFilter, setStatusFilter] = useState('all')
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
-  const { toast } = useToast()
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const url = new URL("/api/admin/orders", window.location.origin)
-        if (searchTerm) url.searchParams.append("search", searchTerm)
-        if (statusFilter !== "all") url.searchParams.append("status", statusFilter)
+        const url = new URL('/api/admin/orders', window.location.origin)
+        if (searchTerm) url.searchParams.append('search', searchTerm)
+        if (statusFilter !== 'all')
+          url.searchParams.append('status', statusFilter)
 
         const response = await fetch(url)
         if (!response.ok) {
-          throw new Error("주문 데이터를 불러오는데 실패했습니다")
+          throw new Error('주문 데이터를 불러오는데 실패했습니다')
         }
         const data = await response.json()
         setOrders(data)
       } catch (error) {
-        console.error("주문 데이터 로딩 오류:", error)
+        console.error('주문 데이터 로딩 오류:', error)
       } finally {
         setLoading(false)
       }
@@ -60,34 +83,33 @@ export default function OrdersPage() {
 
   const handleStatusChange = async (orderId: string, newStatus: string) => {
     try {
-      const response = await fetch("/api/admin/orders", {
-        method: "PUT",
+      const response = await fetch('/api/admin/orders', {
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ orderId, deliveryStatus: newStatus }),
       })
 
       if (!response.ok) {
-        throw new Error("배송 상태 업데이트에 실패했습니다")
+        throw new Error('배송 상태 업데이트에 실패했습니다')
       }
 
       const result = await response.json()
 
       // 상태 업데이트 성공 시 주문 목록 갱신
-      setOrders(orders.map((order) => (order.id === orderId ? { ...order, deliveryStatus: newStatus } : order)))
+      setOrders(
+        orders.map(order =>
+          order.id === orderId
+            ? { ...order, deliveryStatus: newStatus }
+            : order,
+        ),
+      )
 
-      toast({
-        title: "배송 상태 변경",
-        description: result.message,
-      })
+      toast.success(result.message)
     } catch (error) {
-      console.error("배송 상태 업데이트 오류:", error)
-      toast({
-        title: "오류",
-        description: "배송 상태 변경에 실패했습니다.",
-        variant: "destructive",
-      })
+      console.error('배송 상태 업데이트 오류:', error)
+      toast.error('배송 상태 변경에 실패했습니다.')
     }
   }
 
@@ -113,7 +135,7 @@ export default function OrdersPage() {
                 placeholder="주문번호 또는 고객명으로 검색"
                 className="pl-8"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
               />
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -159,7 +181,7 @@ export default function OrdersPage() {
               </TableHeader>
               <TableBody>
                 {orders.length > 0 ? (
-                  orders.map((order) => (
+                  orders.map(order => (
                     <TableRow key={order.id}>
                       <TableCell className="font-medium">{order.id}</TableCell>
                       <TableCell>{order.customer}</TableCell>
@@ -167,21 +189,31 @@ export default function OrdersPage() {
                       <TableCell>{order.items}개</TableCell>
                       <TableCell>{order.total.toLocaleString()}원</TableCell>
                       <TableCell>
-                        <Badge variant={order.paymentStatus === "결제 완료" ? "default" : "destructive"}>
+                        <Badge
+                          variant={
+                            order.paymentStatus === '결제 완료'
+                              ? 'default'
+                              : 'destructive'
+                          }
+                        >
                           {order.paymentStatus}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <Select
                           defaultValue={order.deliveryStatus}
-                          onValueChange={(value) => handleStatusChange(order.id, value)}
+                          onValueChange={value =>
+                            handleStatusChange(order.id, value)
+                          }
                         >
                           <SelectTrigger className="h-8 w-[140px]">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="결제 대기">결제 대기</SelectItem>
-                            <SelectItem value="배송 준비 중">배송 준비 중</SelectItem>
+                            <SelectItem value="배송 준비 중">
+                              배송 준비 중
+                            </SelectItem>
                             <SelectItem value="배송 중">배송 중</SelectItem>
                             <SelectItem value="배송 완료">배송 완료</SelectItem>
                           </SelectContent>
@@ -197,10 +229,14 @@ export default function OrdersPage() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem asChild>
-                              <Link href={`/admin/orders/${order.id}`}>상세 정보</Link>
+                              <Link href={`/admin/orders/${order.id}`}>
+                                상세 정보
+                              </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem>배송 상태 변경</DropdownMenuItem>
-                            <DropdownMenuItem className="text-destructive">주문 취소</DropdownMenuItem>
+                            <DropdownMenuItem className="text-destructive">
+                              주문 취소
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
@@ -209,7 +245,9 @@ export default function OrdersPage() {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={8} className="text-center py-6">
-                      {searchTerm || statusFilter !== "all" ? "검색 결과가 없습니다." : "주문 데이터가 없습니다."}
+                      {searchTerm || statusFilter !== 'all'
+                        ? '검색 결과가 없습니다.'
+                        : '주문 데이터가 없습니다.'}
                     </TableCell>
                   </TableRow>
                 )}
@@ -221,4 +259,3 @@ export default function OrdersPage() {
     </div>
   )
 }
-
