@@ -119,6 +119,9 @@ importers:
       cmdk:
         specifier: ^1.0.4
         version: 1.0.4(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      commander:
+        specifier: ^13.1.0
+        version: 13.1.0
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -235,8 +238,8 @@ importers:
         specifier: ^19
         version: 19.0.4(@types/react@19.0.10)
       pathgen:
-        specifier: ^1.1.0
-        version: 1.1.0
+        specifier: ^2.0.0
+        version: 2.0.0
       prisma:
         specifier: ^6.4.1
         version: 6.4.1(typescript@5.8.2)
@@ -1924,6 +1927,10 @@ packages:
     resolution: {integrity: sha512-yPVavfyCcRhmorC7rWlkHn15b4wDVgVmBA7kV4QVBsF7kv/9TKJAbAXVTxvTnwP8HHKjRCJDClKbciiYS7p0DQ==}
     engines: {node: '>=16'}
 
+  commander@13.1.0:
+    resolution: {integrity: sha512-/rFeCpNJQbhSZjGVwO9RFV3xPqbnERS8MmIQzCtD/zl6gpJuV/bMLuN92oG3F7d8oDEHHRrujSXNUr8fpjntKw==}
+    engines: {node: '>=18'}
+
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
@@ -2550,8 +2557,8 @@ packages:
     resolution: {integrity: sha512-AVbw3UJ2e9bq64vSaS9Am0fje1Pa8pbGqTTsmXfaIiMpnr5DlDhfJOuLj9Sf95ZPVDAUerDfEk88MPmPe7UCQg==}
     engines: {node: '>=0.10.0'}
 
-  pathgen@1.1.0:
-    resolution: {integrity: sha512-Jw+hPfPqOQepJ+uXQfHvRJLx5/bqpcFFaE2ibh/+x/eDPCJD8qJAySUWoHcyU2yHFzCdQb/27ASXHg5xgQWQxw==}
+  pathgen@2.0.0:
+    resolution: {integrity: sha512-FO+MZvM84q20HNW4j2LvzatmJ3Q0BM6q7Gxpk2I4ha2Kig7B/wNVQaDUhNDyKUCrJy1Ew67LiXxM8ENmaP+zrg==}
     hasBin: true
 
   pend@1.2.0:
@@ -5140,6 +5147,8 @@ snapshots:
 
   commander@11.1.0: {}
 
+  commander@13.1.0: {}
+
   concat-map@0.0.1: {}
 
   cookie@0.7.2: {}
@@ -5729,7 +5738,7 @@ snapshots:
 
   path-is-absolute@1.0.1: {}
 
-  pathgen@1.1.0:
+  pathgen@2.0.0:
     dependencies:
       commander: 11.1.0
       tsx: 4.19.3

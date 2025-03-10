@@ -18,8 +18,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ProductsResponseType } from '@/app/api/products/route'
 import useInputDebounce from '@/hooks/useInputDebounce'
+import { apiRoutes } from '@/lib/apiRoutes'
 
 export default function CategoryPage() {
   const { searchTerm, onSearchTermChange } = useInputDebounce()
@@ -31,7 +31,7 @@ export default function CategoryPage() {
 
   const fetchProducts = async ({ pageParam = 1 }) => {
     const response = await fetch(
-      `/api/products?category=${category}&sort=${sortBy}&order=${order}&term=${searchTerm}&page=${pageParam}&pageSize=12`,
+      `${apiRoutes.routes.products.routes.infinite.path}?category=${category}&sort=${sortBy}&order=${order}&term=${searchTerm}&page=${pageParam}&pageSize=12`,
     )
     return response.json()
   }

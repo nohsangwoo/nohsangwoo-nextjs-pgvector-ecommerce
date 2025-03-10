@@ -32,7 +32,7 @@ const registerSchema = z
 type RegisterForm = z.infer<typeof registerSchema>
 
 const registerUser = async (data: RegisterForm) => {
-  const response = await fetch(apiRoutes.api.register, {
+  const response = await fetch(apiRoutes.routes.register.path, {
     method: 'POST',
     body: JSON.stringify(data),
   })

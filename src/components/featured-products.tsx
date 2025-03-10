@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import ProductCard from '@/components/product-card'
+import { apiRoutes } from '@/lib/apiRoutes'
 
 interface ProductData {
   id: number
@@ -46,7 +47,9 @@ export function FeaturedProducts() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('/api/products?limit=8')
+        const response = await fetch(
+          `${apiRoutes.routes.products.path}?limit=8`,
+        )
         if (!response.ok)
           throw new Error('상품 데이터를 가져오는데 실패했습니다')
 

@@ -109,7 +109,7 @@ export const useAuthStore = create(
 )
 
 export async function fetchLogin(email: string, password: string) {
-  const response = await fetch(apiRoutes.api.login, {
+  const response = await fetch(apiRoutes.routes.login.path, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

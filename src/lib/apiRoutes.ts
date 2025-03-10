@@ -1,32 +1,147 @@
-// Auto-generated API routes
-interface ApiRoutes {
-  api: {
+
+      // Auto-generated API routes
+      interface ApiRoutes {
+  routes: {
     admin: {
-      dashboard: string;
-      orders: string;
-      products: string;
-      users: string;
+      routes: {
+        dashboard: {
+          path: string;
+        };
+        orders: {
+          path: string;
+          routes: {
+            '[id]': {
+              path: string;
+            };
+          };
+        };
+        products: {
+          path: string;
+          routes: {
+            '[id]': {
+              path: string;
+            };
+          };
+        };
+        test: {
+          path: string;
+          routes: {
+            testdd: {
+              path: string;
+            };
+          };
+        };
+        users: {
+          path: string;
+          routes: {
+            '[id]': {
+              path: string;
+            };
+          };
+        };
+      };
     };
-    embeddings: string;
-    login: string;
-    presignedUrl: string;
-    products: string;
-    register: string;
+    embeddings: {
+      path: string;
+    };
+    embeddings_alibaba_qwen: {
+      path: string;
+    };
+    login: {
+      path: string;
+    };
+    presignedUrl: {
+      path: string;
+    };
+    products: {
+      path: string;
+      routes: {
+        infinite: {
+          path: string;
+        };
+        test: {
+          path: string;
+        };
+        '[id]': {
+          path: string;
+        };
+      };
+    };
+    register: {
+      path: string;
+    };
   };
 }
-
-export const apiRoutes: ApiRoutes = {
-  "api": {
+      export const apiRoutes: ApiRoutes = {
+  "routes": {
     "admin": {
-      "dashboard": "/api/admin/dashboard",
-      "orders": "/api/admin/orders",
-      "products": "/api/admin/products",
-      "users": "/api/admin/users"
+      "routes": {
+        "dashboard": {
+          "path": "/api/admin/dashboard"
+        },
+        "orders": {
+          "path": "/api/admin/orders",
+          "routes": {
+            "[id]": {
+              "path": "/api/admin/orders/[id]"
+            }
+          }
+        },
+        "products": {
+          "path": "/api/admin/products",
+          "routes": {
+            "[id]": {
+              "path": "/api/admin/products/[id]"
+            }
+          }
+        },
+        "test": {
+          "path": "/api/admin/test",
+          "routes": {
+            "testdd": {
+              "path": "/api/admin/test/testdd"
+            }
+          }
+        },
+        "users": {
+          "path": "/api/admin/users",
+          "routes": {
+            "[id]": {
+              "path": "/api/admin/users/[id]"
+            }
+          }
+        }
+      }
     },
-    "embeddings": "/api/embeddings",
-    "login": "/api/login",
-    "presignedUrl": "/api/presignedUrl",
-    "products": "/api/products",
-    "register": "/api/register"
+    "embeddings": {
+      "path": "/api/embeddings"
+    },
+    "embeddings_alibaba_qwen": {
+      "path": "/api/embeddings_alibaba_qwen"
+    },
+    "login": {
+      "path": "/api/login"
+    },
+    "presignedUrl": {
+      "path": "/api/presignedUrl"
+    },
+    "products": {
+      "path": "/api/products",
+      "routes": {
+        "infinite": {
+          "path": "/api/products/infinite"
+        },
+        "test": {
+          "path": "/api/products/test"
+        },
+        "[id]": {
+          "path": "/api/products/[id]"
+        }
+      }
+    },
+    "register": {
+      "path": "/api/register"
+    }
   }
 };
+    
