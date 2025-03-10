@@ -13,7 +13,7 @@ const openai = new OpenAI({
 })
 async function main() {
   // ... you will write your Prisma Client queries here
-  const productId = 1
+  const productId = 20
 
   const product = await prisma.product.findUnique({
     where: {
@@ -32,14 +32,19 @@ async function main() {
   const postEmb = pgvector.toSql(embeddings)
 
   var queryText = `
-      SELECT 
-        p.id, 
-        p.name, 
-        p.price, 
-        1 - (p.vector <=> $1) as similarity
-      FROM "Product" p
-      WHERE p.id <> $2
-      ORDER BY similarity DESC
+      WITH similar_products AS (
+        SELECT 
+          p.id, 
+          p.name, 
+          p.price, 
+          1 - (p.vector <=> $1) as similarity
+        FROM "Product" p
+        WHERE p.id <> $2
+        ORDER BY similarity DESC
+        LIMIT 10
+      )
+      SELECT * FROM similar_products
+      ORDER BY (similarity * 0.9) + (RANDOM() * 0.1) DESC
       LIMIT 4
     `
   var values = [postEmb, productId]
