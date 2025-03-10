@@ -17,7 +17,7 @@ interface ProductCardProps {
   name: string
   price: number
   imageSrc: string
-  category: string
+  category?: string
   isNew?: boolean
   isSale?: boolean
   salePrice?: number
