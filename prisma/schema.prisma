@@ -4,13 +4,13 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
   extensions = [vector]
 }
 
@@ -21,24 +21,48 @@ model User {
   name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  role      UserRole @default(BUYER)
 
   // 관계
-  orders Order[]
+  orders    Order[]
+  addresses Address[]
+}
+
+model Address {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  address    String // 메인주소
+  extra      String? // 추가주소
+  postalCode String // 우편번호
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model Product {
-  id          Int                   @id @default(autoincrement())
+  id          Int                    @id @default(autoincrement())
   name        String
   description String?
   price       Float
   stock       Int
   // pgvector 확장을 사용한 벡터 임베딩 데이터 저장 (Prisma에서 직접 지원하지 않는 경우 Unsupported 사용)
   vector      Unsupported("vector")?
-  createdAt   DateTime              @default(now())
-  updatedAt   DateTime              @updatedAt
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
 
   // 관계
   orderItems OrderItem[]
+  images     Image[]
+}
+
+model Image {
+  id        Int      @id @default(autoincrement())
+  original  String
+  thumbnail String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Product   Product? @relation(fields: [productId], references: [id])
+  productId Int?
 }
 
 model Order {
@@ -89,4 +113,9 @@ enum PaymentStatus {
   WAITING
   PAID
   FAILED
+}
+
+enum UserRole {
+  BUYER
+  ADMIN
 }
