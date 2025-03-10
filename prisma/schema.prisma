@@ -40,15 +40,17 @@ model Address {
 }
 
 model Product {
-  id          Int                    @id @default(autoincrement())
-  name        String
-  description String?
-  price       Float
-  stock       Int
+  id           Int                    @id @default(autoincrement())
+  name         String
+  description  String?
+  price        Float
+  stock        Int
+  discountRate Float                  @default(0)
+  category     Category?
   // pgvector 확장을 사용한 벡터 임베딩 데이터 저장 (Prisma에서 직접 지원하지 않는 경우 Unsupported 사용)
-  vector      Unsupported("vector")?
-  createdAt   DateTime               @default(now())
-  updatedAt   DateTime               @updatedAt
+  vector       Unsupported("vector")?
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
 
   // 관계
   orderItems OrderItem[]
@@ -118,4 +120,11 @@ enum PaymentStatus {
 enum UserRole {
   BUYER
   ADMIN
+}
+
+enum Category {
+  MEN
+  WOMEN
+  ACCESSORIES
+  SHOES
 }

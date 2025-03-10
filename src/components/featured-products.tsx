@@ -6,9 +6,88 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import ProductCard from "@/components/product-card"
 
+interface ProductData {
+  id: number
+  name: string
+  description: string | null
+  price: number
+  stock: number
+  discountRate: number
+  category: string | null
+  createdAt: string
+  updatedAt: string
+  images: {
+    id: number
+    original: string
+    thumbnail: string
+  }[]
+}
+
+interface FormattedProduct {
+  id: string
+  name: string
+  price: number
+  imageSrc: string
+  category: string
+  isNew?: boolean
+  isSale?: boolean
+  salePrice?: number
+}
+
 export function FeaturedProducts() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isMobile, setIsMobile] = useState(false)
+  const [featuredProducts, setFeaturedProducts] = useState<FormattedProduct[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  // API에서 상품 데이터 가져오기
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('/api/products?limit=8')
+        if (!response.ok) throw new Error('상품 데이터를 가져오는데 실패했습니다')
+        
+        const products: ProductData[] = await response.json()
+        
+        // 현재 날짜 기준 일주일 전 계산
+        const oneWeekAgo = new Date()
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
+        
+        // 상품 데이터 포맷팅
+        const formattedProducts = products.map(product => {
+          // 할인 가격 계산
+          const discountAmount = product.price * (product.discountRate / 100)
+          const salePrice = product.price - discountAmount
+          
+          return {
+            id: product.id.toString(),
+            name: product.name,
+            price: product.price,
+            imageSrc: product.images && product.images.length > 0 
+              ? `https://cdn.yes.monster/${product.images[0].original}`
+              : "/placeholder.svg?height=400&width=300",
+            category: product.category || "기타",
+            isNew: new Date(product.createdAt) > oneWeekAgo,
+            isSale: product.discountRate > 0,
+            salePrice: product.discountRate > 0 ? salePrice : undefined
+          }
+        })
+
+        
+        setFeaturedProducts(formattedProducts)
+      } catch (error) {
+        console.error('상품 데이터 로딩 오류:', error)
+        // 오류 발생 시 빈 배열 사용
+        setFeaturedProducts([])
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    
+    fetchProducts()
+  }, [])
+
+  console.log('featuredProducts in featured-products.tsx: ', featuredProducts)
 
   // 반응형 처리를 위한 화면 크기 감지
   useEffect(() => {
@@ -24,72 +103,6 @@ export function FeaturedProducts() {
     }
   }, [])
 
-  // 샘플 데이터
-  const featuredProducts = [
-    {
-      id: "featured-1",
-      name: "프리미엄 코튼 티셔츠",
-      price: 39000,
-      imageSrc: "/placeholder.svg?height=400&width=300",
-      category: "의류",
-      isSale: true,
-      salePrice: 29000,
-    },
-    {
-      id: "featured-2",
-      name: "슬림핏 데님 청바지",
-      price: 79000,
-      imageSrc: "/placeholder.svg?height=400&width=300",
-      category: "의류",
-    },
-    {
-      id: "featured-3",
-      name: "캐주얼 후드 집업",
-      price: 89000,
-      imageSrc: "/placeholder.svg?height=400&width=300",
-      category: "의류",
-      isNew: true,
-    },
-    {
-      id: "featured-4",
-      name: "클래식 가죽 스니커즈",
-      price: 129000,
-      imageSrc: "/placeholder.svg?height=400&width=300",
-      category: "신발",
-    },
-    {
-      id: "featured-5",
-      name: "미니멀 크로스백",
-      price: 59000,
-      imageSrc: "/placeholder.svg?height=400&width=300",
-      category: "액세서리",
-      isSale: true,
-      salePrice: 49000,
-    },
-    {
-      id: "featured-6",
-      name: "오버사이즈 니트 스웨터",
-      price: 69000,
-      imageSrc: "/placeholder.svg?height=400&width=300",
-      category: "의류",
-      isNew: true,
-    },
-    {
-      id: "featured-7",
-      name: "빈티지 데님 자켓",
-      price: 119000,
-      imageSrc: "/placeholder.svg?height=400&width=300",
-      category: "의류",
-    },
-    {
-      id: "featured-8",
-      name: "스트라이프 셔츠",
-      price: 59000,
-      imageSrc: "/placeholder.svg?height=400&width=300",
-      category: "의류",
-    },
-  ]
-
   const itemsPerPage = isMobile ? 2 : 4
   const totalPages = Math.ceil(featuredProducts.length / itemsPerPage)
 
@@ -102,6 +115,11 @@ export function FeaturedProducts() {
   }
 
   const visibleProducts = featuredProducts.slice(currentIndex * itemsPerPage, (currentIndex + 1) * itemsPerPage)
+
+  // 로딩 상태 표시
+  if (isLoading) {
+    return <div className="text-center py-10">상품을 불러오는 중...</div>
+  }
 
   return (
     <div className="relative">
