@@ -1,65 +1,58 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
-import { useParams } from "next/navigation"
-import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
+import { useState, useEffect } from 'react'
+import { useParams } from 'next/navigation'
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
+import { useInfiniteQuery } from '@tanstack/react-query'
+import { useInView } from 'react-intersection-observer'
 
-import { Button } from "@/components/ui/button"
-import ProductCard from "@/components/product-card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-
-interface Product {
-  id: string
-  name: string
-  price: number
-  imageSrc: string
-  category: string
-}
+import { Button } from '@/components/ui/button'
+import ProductCard from '@/components/product-card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { ProductsResponseType } from '@/app/api/products/route'
+import useInputDebounce from '@/hooks/useInputDebounce'
 
 export default function CategoryPage() {
+  const { searchTerm, onSearchTermChange } = useInputDebounce()
   const params = useParams()
   const category = params.slug as string
-  const [products, setProducts] = useState<Product[]>([])
-  const [sortBy, setSortBy] = useState("name")
-  const [searchTerm, setSearchTerm] = useState("")
-  const [isLoading, setIsLoading] = useState(true)
+  const [sortBy, setSortBy] = useState('createdAt')
+  const [order, setOrder] = useState('desc')
+  const { ref, inView } = useInView()
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setIsLoading(true)
-      try {
-        const response = await fetch("/api/products")
-        const allProducts = await response.json()
-        const filteredProducts =
-          category === "all" ? allProducts : allProducts.filter((product: Product) => product.category === category)
-        setProducts(filteredProducts)
-      } catch (error) {
-        console.error("Failed to fetch products:", error)
-      }
-      setIsLoading(false)
-    }
+  const fetchProducts = async ({ pageParam = 1 }) => {
+    const response = await fetch(
+      `/api/products?category=${category}&sort=${sortBy}&order=${order}&term=${searchTerm}&page=${pageParam}&pageSize=12`,
+    )
+    return response.json()
+  }
 
-    fetchProducts()
-  }, [category])
-
-  const sortedAndFilteredProducts = products
-    .filter((product) => product.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    .sort((a, b) => {
-      if (sortBy === "name") {
-        return a.name.localeCompare(b.name)
-      } else if (sortBy === "priceLow") {
-        return a.price - b.price
-      } else {
-        return b.price - a.price
-      }
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useInfiniteQuery({
+      queryKey: ['products', category, sortBy, order, searchTerm],
+      queryFn: fetchProducts,
+      getNextPageParam: (lastPage, pages) => {
+        return lastPage.hasMore ? pages.length + 1 : undefined
+      },
+      initialPageParam: 1,
     })
 
-  if (isLoading) {
-    return <div className="container mx-auto px-4 py-8">Loading...</div>
-  }
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage()
+    }
+  }, [inView, fetchNextPage, hasNextPage])
+
+  const allProducts = data?.pages.flatMap(page => page.products) ?? []
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -79,42 +72,65 @@ export default function CategoryPage() {
           <Input
             id="search"
             placeholder="상품 검색..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            // value={searchTerm}
+            onChange={onSearchTermChange}
           />
         </div>
         <div className="w-full sm:w-1/3">
           <Label htmlFor="sort">정렬</Label>
-          <Select value={sortBy} onValueChange={setSortBy}>
+          <Select
+            value={`${sortBy}-${order}`}
+            onValueChange={value => {
+              const [newSort, newOrder] = value.split('-')
+              setSortBy(newSort)
+              setOrder(newOrder)
+            }}
+          >
             <SelectTrigger id="sort">
               <SelectValue placeholder="정렬 기준 선택" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="name">이름순</SelectItem>
-              <SelectItem value="priceLow">가격 낮은순</SelectItem>
-              <SelectItem value="priceHigh">가격 높은순</SelectItem>
+              <SelectItem value="name-asc">이름순 (오름차순)</SelectItem>
+              <SelectItem value="name-desc">이름순 (내림차순)</SelectItem>
+              <SelectItem value="price-asc">가격 낮은순</SelectItem>
+              <SelectItem value="price-desc">가격 높은순</SelectItem>
+              <SelectItem value="createdAt-desc">최신순</SelectItem>
+              <SelectItem value="createdAt-asc">오래된순</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      {sortedAndFilteredProducts.length === 0 ? (
-        <p className="text-center text-muted-foreground">해당 카테고리에 상품이 없습니다.</p>
+      {allProducts.length === 0 && !isLoading ? (
+        <p className="text-center text-muted-foreground">
+          해당 카테고리에 상품이 없습니다.
+        </p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {sortedAndFilteredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              id={product.id}
-              name={product.name}
-              price={product.price}
-              imageSrc={product.imageSrc}
-              category={product.category}
-            />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {allProducts.map(product => (
+              <ProductCard
+                key={product.id}
+                id={product.id.toString()}
+                name={product.name}
+                price={product.price}
+                imageSrc={`https://cdn.yes.monster/${product.images[0].original}`}
+                category={product.category || '기타'}
+              />
+            ))}
+          </div>
+
+          <div ref={ref} className="mt-8 flex justify-center">
+            {isFetchingNextPage ? (
+              <p className="text-muted-foreground">로딩 중...</p>
+            ) : hasNextPage ? (
+              <p className="text-muted-foreground">
+                더 많은 상품 불러오는 중...
+              </p>
+            ) : null}
+          </div>
+        </>
       )}
     </div>
   )
 }
-

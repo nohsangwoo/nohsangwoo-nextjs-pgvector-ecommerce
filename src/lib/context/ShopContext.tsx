@@ -1,9 +1,10 @@
-"use client"
+'use client'
 
-import type React from "react"
-import { createContext, useContext, useState, useEffect } from "react"
-import { getCart, type CartItem } from "@/lib/cart"
-import { getWishlist, type WishlistItem } from "@/lib/wishlist"
+import type React from 'react'
+import { createContext, useContext, useState, useEffect } from 'react'
+import { getCart, type CartItem } from '@/lib/cart'
+import { getWishlist, type WishlistItem } from '@/lib/wishlist'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 interface ShopContextType {
   cartItems: CartItem[]
@@ -17,14 +18,17 @@ const ShopContext = createContext<ShopContextType | undefined>(undefined)
 export const useShopContext = () => {
   const context = useContext(ShopContext)
   if (context === undefined) {
-    throw new Error("useShopContext must be used within a ShopProvider")
+    throw new Error('useShopContext must be used within a ShopProvider')
   }
   return context
 }
 
-export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([])
+  const [queryClient] = useState(() => new QueryClient())
 
   const updateCart = () => {
     setCartItems(getCart())
@@ -40,9 +44,12 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [])
 
   return (
-    <ShopContext.Provider value={{ cartItems, wishlistItems, updateCart, updateWishlist }}>
-      {children}
-    </ShopContext.Provider>
+    <QueryClientProvider client={queryClient}>
+      <ShopContext.Provider
+        value={{ cartItems, wishlistItems, updateCart, updateWishlist }}
+      >
+        {children}
+      </ShopContext.Provider>
+    </QueryClientProvider>
   )
 }
-

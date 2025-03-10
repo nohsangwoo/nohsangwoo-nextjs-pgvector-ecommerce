@@ -1,43 +1,56 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prismaClient from '@/lib/prismaClient'
-import { Category } from '@prisma/client'
+import { Category, Product, Image } from '@prisma/client'
 
-interface MockProduct {
-  id: number
-  title: string
-  body: string
+export type ProductWithImages = Product & {
+  images: Image[]
 }
 
-interface Product {
-  id: string
-  name: string
-  price: number
-  description: string
-  imageSrc: string
-  category: string
-  rating: number
-  reviews: number
-  inStock: boolean
-}
-
-const CATEGORIES = ['men', 'women', 'accessories', 'shoes']
+export type ProductsResponseType = ProductWithImages[]
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
 
   const category = searchParams.get('category')
-  const limit = searchParams.get('limit')
+    ? searchParams.get('category')?.toUpperCase()
+    : null
+  const page = parseInt(searchParams.get('page') || '1')
+  const pageSize = parseInt(searchParams.get('pageSize') || '12')
+  const sort = searchParams.get('sort') || 'createdAt'
+  const order = searchParams.get('order') || 'desc'
+  const term = searchParams.get('term') || ''
+
+  console.log('category in api/products/route.ts: ', category)
 
   try {
-    const products = await prismaClient.product.findMany({
-      where: {
-        category: category as Category,
-      },
-      take: limit ? parseInt(limit) : undefined,
-      include: {
-        images: true,
-      },
-    })
+    const [products, total] = await Promise.all([
+      prismaClient.product.findMany({
+        where: {
+          category: category as Category,
+          name: {
+            contains: term,
+            mode: 'insensitive',
+          },
+        },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        include: {
+          images: true,
+        },
+        orderBy: {
+          [sort as string]: order as 'asc' | 'desc',
+        },
+      }),
+      prismaClient.product.count({
+        where: {
+          category: category as Category,
+          name: {
+            contains: term,
+            mode: 'insensitive',
+          },
+        },
+      }),
+    ])
 
     console.log('products in api/products/route.ts: ', products)
     // const response = await fetch('https://jsonplaceholder.typicode.com/posts')
@@ -55,7 +68,11 @@ export async function GET(request: NextRequest) {
     //   inStock: Math.random() > 0.2,
     // }))
 
-    return NextResponse.json(products)
+    return NextResponse.json({
+      products,
+      total,
+      hasMore: page * pageSize < total,
+    })
   } catch (error) {
     console.error('Failed to fetch products:', error)
     return NextResponse.json(
