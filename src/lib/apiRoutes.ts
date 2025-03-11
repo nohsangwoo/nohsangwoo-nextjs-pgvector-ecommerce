@@ -23,14 +23,6 @@
             };
           };
         };
-        test: {
-          path: string;
-          routes: {
-            testdd: {
-              path: string;
-            };
-          };
-        };
         users: {
           path: string;
           routes: {
@@ -57,9 +49,6 @@
       path: string;
       routes: {
         infinite: {
-          path: string;
-        };
-        test: {
           path: string;
         };
         '[id]': {
@@ -95,14 +84,6 @@
             }
           }
         },
-        "test": {
-          "path": "/api/admin/test",
-          "routes": {
-            "testdd": {
-              "path": "/api/admin/test/testdd"
-            }
-          }
-        },
         "users": {
           "path": "/api/admin/users",
           "routes": {
@@ -130,9 +111,6 @@
       "routes": {
         "infinite": {
           "path": "/api/products/infinite"
-        },
-        "test": {
-          "path": "/api/products/test"
         },
         "[id]": {
           "path": "/api/products/[id]"
