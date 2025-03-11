@@ -94,15 +94,16 @@ model OrderItem {
 }
 
 model Payment {
-  id            Int           @id @default(autoincrement())
-  order         Order         @relation(fields: [orderId], references: [id])
-  orderId       Int           @unique
-  paymentMethod String
-  amount        Float
-  status        PaymentStatus
-  transactionId String // 외부 결제사 거래 ID
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id             Int           @id @default(autoincrement())
+  order          Order         @relation(fields: [orderId], references: [id])
+  orderId        Int           @unique
+  paymentMethod  String
+  amount         Float
+  transactionId  String // 외부 결제사 거래 ID
+  paymentOrderId String // 외부 결제사 주문 ID
+  status         PaymentStatus
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 }
 
 enum OrderStatus {

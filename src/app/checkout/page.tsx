@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { useShopStore } from '@/lib/store'
+import { useAuthStore, useShopStore } from '@/lib/store'
 import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
 import TossPayments from './components/TossPayments'
@@ -19,6 +19,8 @@ export default function CheckoutPage() {
   const router = useRouter()
   const { cart, clearCart } = useShopStore()
   const [isLoading, setIsLoading] = useState(false)
+  const [address, setAddress] = useState('')
+  const { user } = useAuthStore()
 
   const totalAmount = cart.reduce(
     (total, item) => total + item.price * item.quantity,
@@ -40,6 +42,12 @@ export default function CheckoutPage() {
     toast.success('주문이 완료되었습니다')
     router.push('/order-confirmation') // 주문 확인 페이지로 이동 (이 페이지는 별도로 만들어야 합니다)
   }
+
+  console.log('cart:', cart)
+
+  const orderName = `${cart[0]?.name} 외 ${cart.length - 1}건`
+  const customerName = user?.name || '김토스'
+  const customerEmail = user?.email || 'customer123@gmail.com'
 
   if (cart.length === 0) {
     return (
@@ -122,7 +130,12 @@ export default function CheckoutPage() {
                 </div>
                 <div>
                   <Label htmlFor="address">주소</Label>
-                  <Input id="address" required />
+                  <Input
+                    id="address"
+                    value={address}
+                    onChange={e => setAddress(e.target.value)}
+                    required
+                  />
                 </div>
               </div>
             </div>
@@ -155,7 +168,13 @@ export default function CheckoutPage() {
               )}
             </Button>
           </form>
-          <TossPayments />
+          <TossPayments
+            address={address}
+            orderName={orderName}
+            customerName={customerName}
+            customerEmail={customerEmail}
+            cart={cart}
+          />
         </div>
       </div>
     </div>

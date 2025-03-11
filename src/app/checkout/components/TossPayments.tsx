@@ -1,39 +1,68 @@
-import { useEffect, useRef, useState } from "react";
-import { loadTossPayments, ANONYMOUS,TossPaymentsWidgets } from "@tosspayments/tosspayments-sdk";
+import { useEffect, useRef, useState } from 'react'
+import {
+  loadTossPayments,
+  ANONYMOUS,
+  TossPaymentsWidgets,
+} from '@tosspayments/tosspayments-sdk'
+import { CartItem } from '@/lib/cart'
 
-const generateRandomString = () => window.btoa(Math.random().toString()).slice(0, 20);
-const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
+const generateRandomString = () =>
+  window.btoa(Math.random().toString()).slice(0, 20)
+const clientKey = 'test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm'
 
-export default function TossPayments() {
-  const [ready, setReady] = useState(false);
-  const [widgets, setWidgets] = useState<TossPaymentsWidgets | null>(null);
+interface TossPaymentsProps {
+  address: string
+  orderName: string
+  customerName: string
+  customerEmail: string
+  cart: CartItem[]
+}
+
+export default function TossPayments({
+  address,
+  orderName,
+  customerName,
+  customerEmail,
+  cart,
+}: TossPaymentsProps) {
+  const [ready, setReady] = useState(false)
+  const [widgets, setWidgets] = useState<TossPaymentsWidgets | null>(null)
   const [amount, setAmount] = useState({
-    currency: "KRW",
+    currency: 'KRW',
     value: 50_000,
-  });
+  })
 
+  const preData = {
+    orderName,
+    customerName,
+    customerEmail,
+    address,
+    cart,
+  }
+
+  const stringifiedData = JSON.stringify(preData)
 
   useEffect(() => {
     async function fetchPaymentWidgets() {
-      const tossPayments = await loadTossPayments(clientKey);
-      const widgets = tossPayments.widgets({ customerKey: ANONYMOUS });
-      setWidgets(widgets);
+      const tossPayments = await loadTossPayments(clientKey)
+      const widgets = tossPayments.widgets({ customerKey: ANONYMOUS })
+      setWidgets(widgets)
     }
 
-    fetchPaymentWidgets();
-  }, [clientKey]);
+    fetchPaymentWidgets()
+  }, [clientKey])
 
   useEffect(() => {
     async function renderPaymentWidgets() {
       if (widgets == null) {
-        return;
+        return
       }
       /**
        * 위젯의 결제금액을 결제하려는 금액으로 초기화하세요.
        * renderPaymentMethods, renderAgreement, requestPayment 보다 반드시 선행되어야 합니다.
        * @docs https://docs.tosspayments.com/sdk/v2/js#widgetssetamount
        */
-      await widgets.setAmount(amount);
+      await widgets.setAmount(amount)
 
       await Promise.all([
         /**
@@ -41,28 +70,27 @@ export default function TossPayments() {
          * @docs https://docs.tosspayments.com/sdk/v2/js#widgetsrenderpaymentmethods
          */
         widgets.renderPaymentMethods({
-          selector: "#payment-method",
+          selector: '#payment-method',
           // 렌더링하고 싶은 결제 UI의 variantKey
           // 결제 수단 및 스타일이 다른 멀티 UI를 직접 만들고 싶다면 계약이 필요해요.
           // @docs https://docs.tosspayments.com/guides/v2/payment-widget/admin#새로운-결제-ui-추가하기
-          variantKey: "DEFAULT",
+          variantKey: 'DEFAULT',
         }),
         /**
          * 약관을 렌더링합니다.
          * @docs https://docs.tosspayments.com/reference/widget-sdk#renderagreement선택자-옵션
          */
         widgets.renderAgreement({
-          selector: "#agreement",
-          variantKey: "AGREEMENT",
+          selector: '#agreement',
+          variantKey: 'AGREEMENT',
         }),
-      ]);
+      ])
 
-      setReady(true);
+      setReady(true)
     }
 
-    renderPaymentWidgets();
-  }, [widgets]);
-
+    renderPaymentWidgets()
+  }, [widgets])
 
   return (
     <div className="wrapper w-full">
@@ -82,12 +110,17 @@ export default function TossPayments() {
                  */
                 await widgets?.requestPayment({
                   orderId: generateRandomString(),
-                  orderName: "토스 티셔츠 외 2건",
-                  customerName: "김토스",
-                  customerEmail: "customer123@gmail.com",
-                  successUrl: window.location.origin + "/checkout/success" + window.location.search,
-                  failUrl: window.location.origin + "/checkout/fail" + window.location.search
-                });
+                  orderName: orderName,
+                  customerName: customerName,
+                  customerEmail: customerEmail,
+                  successUrl:
+                    window.location.origin +
+                    `/checkout/success?data=${stringifiedData}`,
+                  failUrl:
+                    window.location.origin +
+                    '/checkout/fail' +
+                    window.location.search,
+                })
               } catch (error) {
                 // TODO: 에러 처리
               }
@@ -98,5 +131,5 @@ export default function TossPayments() {
         </div>
       </div>
     </div>
-  );
+  )
 }
