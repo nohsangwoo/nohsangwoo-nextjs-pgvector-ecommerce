@@ -13,6 +13,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { useShopStore } from '@/lib/store'
 import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
+import TossPayments from './components/TossPayments'
 
 export default function CheckoutPage() {
   const router = useRouter()
@@ -154,6 +155,7 @@ export default function CheckoutPage() {
               )}
             </Button>
           </form>
+          <TossPayments />
         </div>
       </div>
     </div>
