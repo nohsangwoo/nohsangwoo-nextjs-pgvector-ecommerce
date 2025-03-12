@@ -27,6 +27,9 @@ export async function POST(req: Request) {
 
     const parsedData = JSON.parse(data)
 
+
+    console.log('parsedData:', parsedData)
+
     const secretKey = 'test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6'
     
     // Base64로 인코딩된 인증 키 생성
@@ -87,7 +90,7 @@ export async function POST(req: Request) {
         const order = await prisma.order.create({
           data: {
             totalAmount: +amount,
-            status: OrderStatus.PAID,
+            status: OrderStatus.PENDING,
             userId: parsedSession.id!,
             items: {
               create: parsedData.cart.map((item: CartItem) => ({
@@ -102,7 +105,7 @@ export async function POST(req: Request) {
                 amount: result.suppliedAmount,
                 transactionId: result.paymentKey,
                 paymentOrderId: result.orderId,
-                status: PaymentStatus.PAID,
+                status: PaymentStatus.WAITING,
               },
             },
           },
@@ -117,7 +120,7 @@ export async function POST(req: Request) {
       }
     });
 
-    console.log('result in tosspayments confirm route:', result)
+    // console.log('result in tosspayments confirm route:', result)
 
     return NextResponse.json({
       message: '결제 승인 완료',
