@@ -13,15 +13,27 @@ import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useAuthStore } from '@/lib/store'
 import { toast } from 'sonner'
+import { OrderHistory } from '@/components/order-history'
 
 export default function AccountPage() {
   const router = useRouter()
-  const { user, logout } = useAuthStore()
+  const { user, logout, isHydrated } = useAuthStore()
   const [name, setName] = useState(user?.name || '')
   const [email, setEmail] = useState(user?.email || '')
 
+  console.log("user in accountpage: ",user)
+
+  useEffect(()=>{
+    if(isHydrated){
+      setName(user?.name || '')
+      setEmail(user?.email || '')
+    }
+  },[isHydrated])
+
   useEffect(() => {
-    if (!user) {
+    if (isHydrated &&!user) {
+
+      console.log("유저 없음")
       router.push('/login')
     }
   }, [user, router])
@@ -86,7 +98,7 @@ export default function AccountPage() {
         </TabsContent>
         <TabsContent value="orders" className="mt-6">
           <h2 className="text-xl font-semibold mb-4">주문 내역</h2>
-          <p className="text-muted-foreground">아직 주문 내역이 없습니다.</p>
+          <OrderHistory />
         </TabsContent>
         <TabsContent value="payments" className="mt-6">
           <h2 className="text-xl font-semibold mb-4">결제 정보</h2>

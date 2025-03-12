@@ -70,6 +70,7 @@ export const useShopStore = create(
 interface AuthState {
   user: { id: number; name?: string; email: string } | null
   isLoading: boolean
+  isHydrated: boolean
   login: (email: string, password: string) => Promise<boolean>
   logout: () => void
 }
@@ -79,6 +80,7 @@ export const useAuthStore = create(
     set => ({
       user: null,
       isLoading: false,
+      isHydrated:false,
       login: async (email, password) => {
         set({ isLoading: true })
         try {
@@ -104,6 +106,9 @@ export const useAuthStore = create(
     }),
     {
       name: 'auth-storage',
+      onRehydrateStorage: () => (state) => {
+        if (state) state.isHydrated = true
+      },
     },
   ),
 )
