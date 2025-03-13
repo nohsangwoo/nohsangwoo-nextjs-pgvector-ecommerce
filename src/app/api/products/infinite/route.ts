@@ -20,8 +20,6 @@ export async function GET(request: NextRequest) {
   const order = searchParams.get('order') || 'desc'
   const term = searchParams.get('term') || ''
 
-  console.log('category in api/products/route.ts: ', category)
-
   try {
     const [products, total] = await Promise.all([
       prismaClient.product.findMany({
@@ -52,7 +50,6 @@ export async function GET(request: NextRequest) {
       }),
     ])
 
-    console.log('products in api/products/route.ts: ', products)
     // const response = await fetch('https://jsonplaceholder.typicode.com/posts')
     // const mockProducts: MockProduct[] = await response.json()
 

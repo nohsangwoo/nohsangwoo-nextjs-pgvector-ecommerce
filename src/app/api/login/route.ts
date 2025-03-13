@@ -22,7 +22,6 @@ const loginSchema = z.object({
 type LoginForm = z.infer<typeof loginSchema>
 
 export async function POST(request: Request) {
-  
   const args = await request.json()
 
   const validatedFields = loginSchema.safeParse(args)
@@ -65,6 +64,7 @@ export async function POST(request: Request) {
     session.id = user.id
     session.email = user.email
     session.name = user.name ?? undefined
+    session.role = user.role
     session.isLoggedIn = true
     await session.save()
 

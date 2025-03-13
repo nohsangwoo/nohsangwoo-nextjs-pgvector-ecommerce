@@ -11,6 +11,7 @@ export const getSession = async () => {
     session.id = defaultSession.id
     session.email = defaultSession.email
     session.name = defaultSession.name
+    session.role = defaultSession.role
     session.isLoggedIn = defaultSession.isLoggedIn
   }
 

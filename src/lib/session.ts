@@ -4,6 +4,7 @@ export interface SessionData {
   id?: number
   email?: string
   name?: string
+  role?: string
   isLoggedIn?: boolean
 }
 
@@ -11,6 +12,7 @@ export const defaultSession: SessionData = {
   id: undefined,
   email: undefined,
   name: undefined,
+  role: undefined,
   isLoggedIn: false,
 }
 
