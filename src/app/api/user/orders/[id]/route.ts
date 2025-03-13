@@ -4,7 +4,7 @@ import { getSession } from '@/lib/ironSessionControl'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   // 인증된 사용자 세션 가져오기
   const preSession = await getSession()
@@ -17,7 +17,7 @@ export async function GET(
   }
 
   const userId = Number(session.id)
-  const orderId = Number(params.id)
+  const orderId = Number((await params).id)
 
   if (isNaN(orderId)) {
     return NextResponse.json(
