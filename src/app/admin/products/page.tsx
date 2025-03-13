@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Search, Filter, ChevronDown, MoreHorizontal, Plus } from "lucide-react"
+import { Search, Filter, ChevronDown, MoreHorizontal, Plus, PlusCircle } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -57,14 +57,14 @@ export default function ProductsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">상품 관리</h1>
-        <Button asChild>
-          <Link href="/admin/products/new">
-            <Plus className="h-4 w-4 mr-2" />
+        <Link href="/admin/products/new">
+          <Button>
+            <PlusCircle className="h-4 w-4 mr-2" />
             신규 상품 등록
-          </Link>
-        </Button>
+          </Button>
+        </Link>
       </div>
 
       <Card className="mb-6">

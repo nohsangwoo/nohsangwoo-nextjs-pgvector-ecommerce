@@ -21,6 +21,8 @@ async function main() {
     },
   })
 
+  console.log("product", product)
+
   const text = product?.name as string
   const embedding = await openai.embeddings.create({
     model: 'text-embedding-3-small',
