@@ -280,7 +280,7 @@ export default function SuccessPage() {
               </motion.a>
               <motion.a
                 className="action-button order"
-                href="/my/orders"
+                href="/account"
                 whileHover={{ scale: 1.05, backgroundColor: '#2db57f' }}
                 whileTap={{ scale: 0.95 }}
               >

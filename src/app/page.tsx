@@ -2,7 +2,6 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 import { Button } from '@/components/ui/button'
-import ProductCard from '@/components/product-card'
 import { FeaturedProducts } from '@/components/featured-products'
 import { NavBar } from '@/components/NavBar'
 import { NewProducts } from '@/components/new-products'
@@ -17,7 +16,7 @@ export default function Home() {
         <section className="relative">
           <div className="relative h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] w-full">
             <Image
-              src="/placeholder.svg?height=600&width=1200"
+              src="/main/1.webp"
               alt="Summer Collection"
               fill
               className="object-cover"
@@ -56,7 +55,7 @@ export default function Home() {
               className="group relative h-[180px] rounded-lg overflow-hidden"
             >
               <Image
-                src="/placeholder.svg?height=400&width=300"
+                src="/category/men.webp"
                 alt="남성"
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -70,7 +69,7 @@ export default function Home() {
               className="group relative h-[180px] rounded-lg overflow-hidden"
             >
               <Image
-                src="/placeholder.svg?height=400&width=300"
+                src="/category/women.webp"
                 alt="여성"
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -84,7 +83,7 @@ export default function Home() {
               className="group relative h-[180px] rounded-lg overflow-hidden"
             >
               <Image
-                src="/placeholder.svg?height=400&width=300"
+                src="/category/accessories.webp"
                 alt="액세서리"
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -100,7 +99,7 @@ export default function Home() {
               className="group relative h-[180px] rounded-lg overflow-hidden"
             >
               <Image
-                src="/placeholder.svg?height=400&width=300"
+                src="/category/shoes.webp"
                 alt="신발"
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-300"

@@ -46,6 +46,7 @@ export default function CategoryPage() {
       initialPageParam: 1,
     })
 
+  console.log('data: ', data)
   useEffect(() => {
     if (inView && hasNextPage) {
       fetchNextPage()
@@ -114,7 +115,11 @@ export default function CategoryPage() {
                 id={product.id.toString()}
                 name={product.name}
                 price={product.price}
-                imageSrc={`https://cdn.yes.monster/${product.images[0].original}`}
+                imageSrc={
+                  product?.images[0]?.original
+                    ? `https://cdn.yes.monster/${product?.images[0]?.original}`
+                    : '/placeholder.svg?height=400&width=300'
+                }
                 category={product.category || '기타'}
               />
             ))}

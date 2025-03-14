@@ -1,36 +1,26 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
-## Getting Started
-
-First, run the development server:
+### ssl 설정
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+apt-get update
+apt-get install certbot python3-certbot-nginx
+certbot certonly --webroot -w /usr/share/nginx/html -d ecommerce.yes.monster --email milli@molluhub.com --agree-tos --no-eff-email
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+```bash
+root@d0d44d21e87a:/# certbot certonly --webroot -w /usr/share/nginx/html -d ecommerce.yes.monster --email milli@molluhub.com --agree-tos --no-eff-email
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+Requesting a certificate for ecommerce.yes.monster
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Successfully received certificate.
+Certificate is saved at: /etc/letsencrypt/live/ecommerce.yes.monster/fullchain.pem
+Key is saved at:         /etc/letsencrypt/live/ecommerce.yes.monster/privkey.pem
+This certificate expires on 2025-06-11.
+These files will be updated when the certificate renews.
+Certbot has set up a scheduled task to automatically renew this certificate in the background.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+If you like Certbot, please consider supporting our work by:
+ * Donating to ISRG / Let's Encrypt:   https://letsencrypt.org/donate
+ * Donating to EFF:                    https://eff.org/donate-le
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+```

@@ -8,7 +8,7 @@ import { CartItem } from '@/lib/cart'
 
 const generateRandomString = () =>
   window.btoa(Math.random().toString()).slice(0, 20)
-const clientKey = 'test_ck_Z61JOxRQVEEl9mNPyBYzVW0X9bAq'
+const clientKey = 'test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm'
 
 interface TossPaymentsProps {
   address: string
